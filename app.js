@@ -14,8 +14,9 @@ const productRoutes = require("./routes/products");
 
 const orderRoutes = require("./routes/products");
 
-mongoose.connect('mongodb+srv://roman21:' + process.env.MONGO_ATLAS_PW + 'roman21@cluster0-kbmjr.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true });
-
+//mongoose.connect('mongodb+srv://roman21:roman2147@cluster0-kbmjr.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true });
+// mongoose.connect('mongodb://roman21:roman2147@ds151076.mlab.com:51076/productapi', { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost/products', { useNewUrlParser: true });
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
