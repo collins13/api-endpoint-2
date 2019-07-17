@@ -14,6 +14,7 @@ const port = process.env.PORT || 3000;
 const productRoutes = require("./routes/products");
 
 const orderRoutes = require("./routes/orders");
+const userRoutes = require("./routes/users");
 
 //mongoose.connect('mongodb+srv://roman21:roman2147@cluster0-kbmjr.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true });
 // mongoose.connect('mongodb://roman21:roman2147@ds151076.mlab.com:51076/productapi', { useNewUrlParser: true });
@@ -42,6 +43,7 @@ app.use((req, res, next) => {
 
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
+app.use("/user", userRoutes);
 
 app.listen(port, () => console.log(`port listening ${port}`));
 
