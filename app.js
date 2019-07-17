@@ -1,6 +1,7 @@
 const express = require("express");
 
 const app = express();
+const path = require('path');
 
 const debug = require("debug")("app");
 
@@ -12,7 +13,7 @@ const port = process.env.PORT || 3000;
 
 const productRoutes = require("./routes/products");
 
-const orderRoutes = require("./routes/products");
+const orderRoutes = require("./routes/orders");
 
 //mongoose.connect('mongodb+srv://roman21:roman2147@cluster0-kbmjr.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true });
 // mongoose.connect('mongodb://roman21:roman2147@ds151076.mlab.com:51076/productapi', { useNewUrlParser: true });
@@ -20,7 +21,8 @@ mongoose.connect('mongodb://localhost/products', { useNewUrlParser: true });
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+app.use('/uploads', express.static('uploads'));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(

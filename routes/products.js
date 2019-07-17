@@ -1,12 +1,47 @@
 const express = require("express");
 const debug = require("debug")("app:products");
+const multer = require("multer");
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, "./uploads/");
+    },
+    filename: function(req, file, cb) {
+        cb(null, new Date().toISOString() + file.originalname);
+    }
+});
+// const fileFilter = (req, file, cb) => {
+//     // The function should call `cb` with a boolean
+//     // to indicate if the file should be accepted
+
+//     // To reject this file pass `false`, like so:
+//     if (
+//         file.mimetype === "image/jpeg" ||
+//         file.mimetype === "image/jpg" ||
+//         file.mimetype === "image/png"
+//     ) {
+
+//         cb(null, false);
+//     } else {
+//         cb(null, false);
+//         // You can always pass an error if something goes wrong:
+//         cb(new Error("I don't have a clue!"));
+//     }
+
+// };
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 5
+    }
+    // fileFilter: fileFilter
+});
 const router = express.Router();
 const Product = require("../models/Product");
 const mongoose = require("mongoose");
 
 router.get("/", (req, res, next) => {
     Product.find()
-        .select("name price _id")
+        .select("name price _id cover_image")
         .exec()
         .then(docs => {
             const response = {
@@ -16,6 +51,7 @@ router.get("/", (req, res, next) => {
                         name: doc.name,
                         price: doc.price,
                         _id: doc._id,
+                        cover_image: doc.cover_image,
                         request: {
                             type: "GET",
                             url: "http://localhost:3000/products/" + doc._id
@@ -33,7 +69,8 @@ router.get("/", (req, res, next) => {
         });
 });
 
-router.post("/", (req, res, next) => {
+router.post("/", upload.single("cover_image"), (req, res, next) => {
+    console.log(req.file);
     // const product = {
     //     name: req.body.name,
     //     price: req.body.price
@@ -41,7 +78,8 @@ router.post("/", (req, res, next) => {
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price
+        price: req.body.price,
+        cover_image: req.file.path
     });
 
     product
@@ -55,7 +93,7 @@ router.post("/", (req, res, next) => {
                     price: result.price,
                     _id: result.id,
                     request: {
-                        type: 'GET',
+                        type: "GET",
                         url: "http://localhost:3000/products/" + result._id
                     }
                 }
@@ -69,7 +107,7 @@ router.post("/", (req, res, next) => {
 router.get("/:id", (req, res, next) => {
     id = req.params.id;
     Product.findById(id)
-        .select('name price _id')
+        .select("name price _id cover_image")
         .exec()
         .then(docs => {
             console.log(docs);
@@ -77,8 +115,8 @@ router.get("/:id", (req, res, next) => {
                 res.status(200).json({
                     Products: docs,
                     request: {
-                        description: 'get all products',
-                        ur: 'http://localhost:3000/products'
+                        description: "get all products",
+                        ur: "http://localhost:3000/products"
                     }
                 });
                 debug(docs);
@@ -100,7 +138,13 @@ router.put("/:id", (req, res, next) => {
     Product.findByIdAndUpdate({ _id: id }, req.body).then(() => {
         Product.findOne({ _id: id })
             .then(result => {
-                res.status(200).json({ message: "product updated" });
+                res.status(200).json({
+                    message: "product updated",
+                    request: {
+                        type: "GET",
+                        url: "http://localhost:3000/products"
+                    }
+                });
             })
             .catch(err => {
                 debug(err);
@@ -134,7 +178,11 @@ router.delete("/:id", (req, res, next) => {
         .exec()
         .then(result => {
             res.status(200).json({
-                message: "product deleted"
+                message: "product deleted",
+                request: {
+                    type: "GET",
+                    url: "http://localhost:3000/products"
+                }
             });
         })
         .catch(err => {
