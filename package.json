@@ -10,14 +10,14 @@
     "author": "rashid collins",
     "license": "MIT",
     "dependencies": {
-        "bcrypt": "^3.0.6",
+        "bcrypt": "^5.0.1",
         "body-parser": "^1.19.0",
         "express": "^4.17.1",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.6.4",
         "morgan": "^1.9.1",
         "multer": "^1.4.2",
-        "nodemon": "^1.19.1",
+        "nodemon": "^2.0.0",
         "path": "^0.12.7"
     }
 }
